@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/moisesvega/adventofcode-2020/utils"
 )
 
 func TestDay1(t *testing.T) {
@@ -76,14 +78,10 @@ func TestDay1Pt2(t *testing.T) {
 			return
 		},
 		"from input file": func(param *[]int) (expectedResponse int) {
-			file, err := os.Open("input.in")
-			if err != nil {
-				panic(err.Error())
-			}
 			in := &[]int{}
-			scanner := bufio.NewScanner(file)
-			for scanner.Scan() {
-				value, err := strconv.Atoi(scanner.Text())
+			lines := utils.ReadLinesFromFile("input.in")
+			for _, line := range lines {
+				value, err := strconv.Atoi(line)
 				if err != nil {
 					panic(err.Error())
 				}
