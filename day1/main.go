@@ -1,26 +1,20 @@
 package main
 
-import (
-	"testing"
-
-	"github.com/stretchr/testify/assert"
-)
-
 // --- Day 1: Report Repair ---
 // After saving Christmas five years in a row, you've decided to take a vacation at a nice resort on a tropical island. Surely, Christmas will go on without you.
-// 
+//
 // The tropical island has its own currency and is entirely cash-only. The gold coins used there have a little picture of a starfish; the locals just call them stars. None of the currency exchanges seem to have heard of them, but somehow, you'll need to find fifty of these coins by the time you arrive so you can pay the deposit on your room.
-// 
+//
 // To save your vacation, you need to get all fifty stars by December 25th.
-// 
+//
 // Collect stars by solving puzzles. Two puzzles will be made available on each day in the Advent calendar; the second puzzle is unlocked when you complete the first. Each puzzle grants one star. Good luck!
-// 
+//
 // Before you leave, the Elves in accounting just need you to fix your expense report (your puzzle input); apparently, something isn't quite adding up.
-// 
+//
 // Specifically, they need you to find the two entries that sum to 2020 and then multiply those two numbers together.
-// 
+//
 // For example, suppose your expense report contained the following:
-// 
+//
 // 1721
 // 979
 // 366
@@ -31,26 +25,83 @@ import (
 //
 // Of course, your expense report is much larger. Find the two entries that sum to 2020; what do you get if you multiply them together?
 
-func day1(in []int) (out int) {
-	
-	return 1
+func day1(values []int, target int) (out int) {
+	cache := map[int]bool{}
+	var max int
+	max = 0
+
+	for _, value := range values {
+		if _, ok := cache[target-value]; ok {
+			tmp := value * (target - value)
+			if tmp > max {
+				max = tmp
+			}
+		}
+		cache[value] = true
+	}
+
+	return max
 }
 
-func day1Test(t *testing.T)  {
-	tt := map[string]func(param *[]int)(expectedResponse int){
-		"success": func(param *[]int) (expectedResponse int) {
+// --- Part Two ---
+// The Elves in accounting are thankful for your help; one of them even offers you a starfish coin they had left over from a past vacation. They offer you a second one if you can find three numbers in your expense report that meet the same criteria.
+//
+// Using the above example again, the three entries that sum to 2020 are 979, 366, and 675. Multiplying them together produces the answer, 241861950.
+//
+// In your expense report, what is the product of the three entries that sum to 2020?
 
-		},
+func day1Pt2(values []int, target int) (out int) {
+	triplets := map[int]int{}
+	var max int
+
+	for i, value := range values {
+		if v, ok := triplets[target-value]; ok {
+			if v > max {
+				max = v
+			}
+			continue
+		}
+
+		a, b := tuple(remove(values, i), target-value)
+		v := a * b * value
+		// little nice improvement to not calculate any of these values
+		triplets[target-value] = v
+		triplets[target-a] = v
+		triplets[target-b] = v
 	}
 
-	for name, f := range tt {
-		f := f
-		t.Run(name, func(t *testing.T) {
-			var in []int
-			expectedResponse := f(&in)
+	return max
+}
 
-			response := day1(in)
-			assert.Equal(t, expectedResponse, response)
-		})
+func tuple(values []int, target int) (int, int) {
+	cache := map[int]bool{}
+	var (
+		max  int
+		out  int
+		out2 int
+	)
+	out, max, out2 = 0, 0, 0
+
+	for _, value := range values {
+		if _, ok := cache[target-value]; ok {
+			tmp := value * (target - value)
+			if tmp > max {
+				max = tmp
+				out = value
+				out2 = target - value
+			}
+		}
+		cache[value] = true
 	}
+
+	return out, out2
+}
+
+func remove(in []int, s int) []int {
+	slice := make([]int, len(in))
+	copy(slice, in)
+	if s == len(in)-1 {
+		return append(slice[:s-1])
+	}
+	return append(slice[:s], slice[s+1:]...)
 }
