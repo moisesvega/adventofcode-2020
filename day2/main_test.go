@@ -81,3 +81,38 @@ func TestPt1(t *testing.T) {
 		})
 	}
 }
+
+func TestPt2(t *testing.T) {
+	t.Parallel()
+
+	tests := map[string]func() (rq []*request, expectedResult int){
+		"valid": func() (rq []*request, expectedResult int) {
+			in := []string{
+				"1-3 a: abcde",
+				"1-3 b: cdefg",
+				"2-9 c: ccccccccc",
+			}
+
+			rq = parseLines(in)
+			expectedResult = 1
+			return
+		},
+		"valid from file": func() (rq []*request, expectedResult int) {
+			in := utils.ReadLinesFromFile("input.in")
+
+			rq = parseLines(in)
+			expectedResult = 705
+			return
+		},
+	}
+
+	for name, f := range tests {
+		f := f
+		t.Run(name, func(t *testing.T) {
+			r, expectedResult := f()
+
+			result := pt2(r)
+			assert.Equal(t, expectedResult, result)
+		})
+	}
+}

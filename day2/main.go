@@ -54,3 +54,19 @@ func parseLines(in []string) (out []*request) {
 	}
 	return out
 }
+
+func pt2(in []*request) (out int) {
+	out = 0
+	for _, r := range in {
+		if validpt2(r) {
+			out++
+		}
+	}
+	return out
+}
+
+func validpt2(rq *request) bool {
+	res := rq.target == string(rq.password[rq.min-1]) && rq.target != string(rq.password[rq.max-1])
+	res2 := rq.target == string(rq.password[rq.max-1]) && rq.target != string(rq.password[rq.min-1])
+	return res || res2
+}
